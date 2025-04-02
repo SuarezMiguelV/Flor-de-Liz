@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Ingresos y Gastos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        button {
+            margin: 5px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <img src="imagenes/Logo Flor de Liz.png" alt="Logo del Restaurante" width="150">
+    
+    <h2>Registro de Gastos</h2>
+    <table id="tablaGastos">
+        <tr>
+            <th>Fecha</th>
+            <th>Concepto</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>Total</th>
+            <th>Acción</th>
+        </tr>
+    </table>
+    <button onclick="agregarFila('tablaGastos')">Agregar Gasto</button>
+    <p>Total Gastos: <span id="totalGastos">0</span></p>
+
+    <h2>Registro de Ingresos</h2>
+    <table id="tablaIngresos">
+        <tr>
+            <th>Fecha</th>
+            <th>Concepto</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>Total</th>
+            <th>Acción</th>
+        </tr>
+    </table>
+    <button onclick="agregarFila('tablaIngresos')">Agregar Ingreso</button>
+    <p>Total Ingresos: <span id="totalIngresos">0</span></p>
+
+    <h2>Balance del Día</h2>
+    <p>Balance: <span id="balance">0</span></p>
+
+    <script>
+        function agregarFila(tablaId) {
+            let tabla = document.getElementById(tablaId);
+            let fila = tabla.insertRow(-1);
+            for (let i = 0; i < 5; i++) {
+                let celda = fila.insertCell(i);
+                let input = document.createElement('input');
+                input.type = (i === 2 || i === 3) ? 'number' : 'text';
+                input.oninput = function() { calcularTotal(tablaId); };
+                celda.appendChild(input);
+            }
+            let celdaAccion = fila.insertCell(5);
+            let btnEliminar = document.createElement('button');
+            btnEliminar.innerText = 'Eliminar';
+            btnEliminar.onclick = function() { eliminarFila(this, tablaId); };
+            celdaAccion.appendChild(btnEliminar);
+        }
+        
+        function eliminarFila(btn, tablaId) {
+            let fila = btn.parentNode.parentNode;
+            fila.parentNode.removeChild(fila);
+            calcularTotal(tablaId);
+        }
+        
+        function calcularTotal(tablaId) {
+            let tabla = document.getElementById(tablaId);
+            let total = 0;
+            for (let i = 1; i < tabla.rows.length; i++) {
+                let cantidad = tabla.rows[i].cells[2].children[0].value || 0;
+                let precio = tabla.rows[i].cells[3].children[0].value || 0;
+                let subtotal = cantidad * precio;
+                tabla.rows[i].cells[4].innerText = subtotal;
+                total += subtotal;
+            }
+            document.getElementById(tablaId === 'tablaGastos' ? 'totalGastos' : 'totalIngresos').innerText = total;
+            actualizarBalance();
+        }
+        
+        function actualizarBalance() {
+            let totalGastos = parseFloat(document.getElementById('totalGastos').innerText) || 0;
+            let totalIngresos = parseFloat(document.getElementById('totalIngresos').innerText) || 0;
+            document.getElementById('balance').innerText = totalIngresos - totalGastos;
+        }
+    </script>
+</body>
+</html>
